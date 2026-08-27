@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Noor's Life</title>
+<style>
+  :root {
+    --bg: #17162a;
+    --bg-2: #1f1d38;
+    --surface: #232141;
+    --moon: #f5e6c8;
+    --moon-soft: #d9c9a0;
+    --ash: #423f60;
+    --ash-light: #605c82;
+    --blush: #d9a3b8;
+    --sage: #a8d8c9;
+    --lavender: #b8aedb;
+    --text: #f0ece4;
+    --text-dim: #8f8aa8;
+    --font-display: Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;
+    --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', 'Roboto Mono', Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #0c0b16; }
+  body { font-family: var(--font-body); color: var(--text); display: flex; justify-content: center; padding: 16px; }
+
+  #app {
+    background: radial-gradient(ellipse at 25% -10%, #2b2750 0%, var(--bg) 60%);
+    color: var(--text);
+    border-radius: 20px;
+    padding: 26px 22px 30px;
+    max-width: 640px;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+    min-height: 560px;
+    transition: background 4s ease;
+  }
+  .sky-deco {
+    position: absolute; inset: 0; pointer-events: none; z-index: 0;
+    background-image:
+      radial-gradient(1.5px 1.5px at 12% 15%, var(--moon-soft), transparent),
+      radial-gradient(1.5px 1.5px at 82% 10%, var(--moon-soft), transparent),
+      radial-gradient(1px 1px at 60% 25%, var(--moon-soft), transparent),
+      radial-gradient(1.5px 1.5px at 30% 40%, var(--moon-soft), transparent),
+      radial-gradient(1px 1px at 92% 45%, var(--moon-soft), transparent),
+      radial-gradient(1px 1px at 45% 8%, var(--moon-soft), transparent);
+    opacity: 0.45;
+    animation: twinkle 8s ease-in-out infinite;
+  }
+  @keyframes twinkle { 0%,100% { opacity: 0.3; } 50% { opacity: 0.55; } }
+  .sky-cloud {
+    position: absolute; border-radius: 50%; filter: blur(6px); pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse, rgba(184,174,219,0.12), rgba(184,174,219,0) 70%);
+    animation: driftslow 90s ease-in-out infinite;
+  }
+  @keyframes driftslow { 0%,100% { transform: translateX(0); } 50% { transform: translateX(24px); } }
+  #app > *:not(.sky-deco):not(.sky-cloud) { position: relative; z-index: 1; }
+
+  .fraunces { font-family: var(--font-display); font-style: italic; }
+  .mono { font-family: var(--font-mono); }
+  a { color: inherit; }
+
+  .header { display: flex; align-items: center; gap: 18px; margin-bottom: 6px; }
+  .moon-col { display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; }
+  .moon-ring { position: relative; width: 74px; height: 74px; border-radius: 50%; overflow: hidden; flex-shrink: 0; cursor: pointer; }
+  .moon-caption { font-size: 9px; color: var(--text-dim); text-align: center; max-width: 80px; line-height: 1.2; }
+  .moon-body { position: absolute; inset: 0; border-radius: 50%; background: linear-gradient(135deg, var(--moon), var(--moon-soft)); }
+  .moon-shadow { position: absolute; inset: 0; border-radius: 50%; background: var(--bg-2); transition: transform 0.7s ease; box-shadow: inset -8px 0 14px rgba(0,0,0,0.25); }
+  .header-text h1 { font-size: 22px; margin: 0 0 2px; font-weight: 600; }
+  .header-sub { font-size: 12px; color: var(--text-dim); }
+  .day-type-badge {
+    display: inline-block; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--sage); background: rgba(168,216,201,0.14); padding: 3px 9px; border-radius: 10px;
+    margin-bottom: 5px;
+  }
+  .phase-badge {
+    display: inline-block; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--lavender); background: rgba(184,174,219,0.16); padding: 3px 9px; border-radius: 10px;
+    margin: 0 0 5px 6px;
+  }
+  .header-stats { font-size: 11.5px; color: var(--text-dim); margin-top: 3px; }
+
+  .theme-line {
+    width: 100%; background: none; border: none; border-bottom: 1px solid var(--ash);
+    padding: 6px 2px; color: var(--text); font-family: var(--font-display); font-style: italic;
+    font-size: 15px; margin: 16px 0 20px;
+  }
+  .theme-line::placeholder { color: var(--text-dim); }
+  .theme-line:focus { outline: none; border-bottom-color: var(--moon-soft); }
+
+  .nav-tabs { display: flex; gap: 6px; margin-bottom: 18px; }
+  .nav-tab {
+    background: none; border: none; color: var(--text-dim); font-size: 12.5px; font-weight: 600;
+    cursor: pointer; font-family: inherit; padding: 4px 0; margin-right: 16px; border-bottom: 2px solid transparent;
+  }
+  .nav-tab.active { color: var(--text); border-bottom-color: var(--moon-soft); }
+
+  .task-list { margin-bottom: 6px; }
+  .task-row {
+    display: flex; align-items: center; gap: 10px; padding: 10px 4px;
+    border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer;
+  }
+  .task-row:last-child { border-bottom: none; }
+  .cat-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .task-check {
+    width: 19px; height: 19px; border-radius: 50%; border: 2px solid var(--ash-light);
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 10px; background: transparent;
+  }
+  .task-check.done { background: var(--moon); border-color: var(--moon); color: var(--bg); }
+  .task-check.missed { background: transparent; border-color: var(--blush); color: var(--blush); }
+  .task-time { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-dim); width: 38px; flex-shrink: 0; }
+  .task-title { flex: 1; font-size: 13.5px; }
+  .task-title.done { color: var(--text-dim); text-decoration: line-through; }
+  .task-title.missed { color: var(--blush); }
+  .task-caret { color: var(--text-dim); font-size: 11px; flex-shrink: 0; }
+
+  .task-detail {
+    padding: 10px 4px 16px 33px; display: flex; flex-direction: column; gap: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .detail-label { font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-dim); display: block; margin-bottom: 3px; }
+  .detail-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .detail-row > div { flex: 1; min-width: 120px; }
+  .detail-actions { display: flex; gap: 14px; margin-top: 2px; }
+  .detail-actions button {
+    background: none; border: none; color: var(--text-dim); font-size: 11.5px; cursor: pointer; font-family: inherit;
+    text-decoration: underline; padding: 0;
+  }
+  .detail-actions button:hover { color: var(--text); }
+
+  input[type=text], input[type=time], input[type=url], input[type=date], input[type=number],
+  select, textarea {
+    background: var(--bg-2); border: 1px solid var(--ash); border-radius: 10px;
+    padding: 7px 10px; color: var(--text); font-family: inherit; font-size: 12.5px; width: 100%;
+  }
+  textarea { resize: vertical; }
+
+  .quick-add { display: flex; gap: 8px; margin: 14px 0 4px; }
+  .quick-add input[type=time] { width: 84px; flex-shrink: 0; }
+  .quick-add input[type=text] { flex: 1; }
+  button.primary {
+    background: var(--moon); color: #241d08; border: none; border-radius: 10px;
+    padding: 7px 14px; font-weight: 600; font-size: 12.5px; cursor: pointer; font-family: inherit; flex-shrink: 0;
+  }
+  button.ghost {
+    background: none; border: 1px solid var(--ash); color: var(--text-dim);
+    border-radius: 10px; padding: 6px 12px; font-size: 11.5px; cursor: pointer; font-family: inherit;
+  }
+  button.ghost:hover { color: var(--text); border-color: var(--ash-light); }
+
+  .toggle-line {
+    font-size: 11.5px; color: var(--text-dim); cursor: pointer; text-decoration: underline;
+    display: inline-block; margin: 10px 12px 0 0;
+  }
+  .toggle-line:hover { color: var(--text); }
+
+  .expand-panel {
+    background: var(--surface); border-radius: 14px; padding: 14px; margin-top: 10px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+
+  .timer-display { font-family: var(--font-mono); font-size: 34px; text-align: center; color: var(--sage); }
+  .timer-mode { text-align: center; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); }
+  .timer-controls { display: flex; justify-content: center; gap: 8px; margin-top: 6px; }
+
+  .empty { color: var(--text-dim); font-size: 13px; padding: 20px 4px; text-align: center; }
+
+  .focus-home { min-height: 380px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px 10px 70px; }
+  .focus-home-eyebrow { font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 14px; }
+  .focus-home-title { font-size: 30px; font-weight: 600; line-height: 1.3; margin-bottom: 16px; max-width: 420px; }
+  .focus-home-time { font-family: var(--font-mono); color: var(--moon); font-size: 13px; margin-bottom: 16px; }
+  .focus-home-app {
+    display: inline-flex; font-size: 12.5px; color: var(--sage); background: rgba(168,216,201,0.12);
+    padding: 5px 14px; border-radius: 20px; margin-bottom: 18px; text-decoration: none; cursor: pointer;
+  }
+  .focus-home-app:hover { background: rgba(168,216,201,0.22); }
+  .focus-home-goalpct {
+    display: inline-flex; font-size: 12px; color: var(--lavender); background: rgba(184,174,219,0.13);
+    padding: 5px 14px; border-radius: 20px; margin-bottom: 18px;
+  }
+  .task-goalpct {
+    font-size: 9.5px; color: var(--lavender); background: rgba(184,174,219,0.14);
+    padding: 2px 7px; border-radius: 8px; flex-shrink: 0; white-space: nowrap;
+  }
+  .focus-home-media { max-width: 100%; max-height: 240px; border-radius: 14px; margin-bottom: 20px; }
+  .focus-home-link { display: inline-block; margin-bottom: 20px; color: var(--sage); font-size: 12.5px; text-decoration: underline; }
+  .focus-home-actions { display: flex; gap: 10px; justify-content: center; margin-bottom: 6px; }
+  .focus-home-done {
+    background: var(--moon); color: #241d08; border: none; border-radius: 12px;
+    padding: 13px 30px; font-weight: 600; font-size: 14.5px; cursor: pointer; font-family: inherit;
+  }
+  .focus-home-skip {
+    background: none; border: 1px solid var(--ash); color: var(--text-dim);
+    border-radius: 12px; padding: 13px 22px; font-size: 13.5px; cursor: pointer; font-family: inherit;
+  }
+  .cat-wrap { position: relative; display: flex; justify-content: center; margin: 16px 0 2px; }
+  .cat-face {
+    background: rgba(245,230,200,0.12); border: 1px solid var(--ash); border-radius: 50%;
+    width: 46px; height: 46px; font-size: 22px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.15s, background 0.15s; font-family: inherit;
+  }
+  .cat-face:hover { background: rgba(245,230,200,0.2); transform: scale(1.08); }
+  .cat-face:active { transform: scale(0.92); }
+  .meow-bubble {
+    position: absolute; top: -26px; left: 50%; transform: translate(-50%, 4px);
+    background: var(--surface); color: var(--moon); font-size: 11px; padding: 4px 12px;
+    border-radius: 12px; opacity: 0; transition: opacity 0.2s ease, transform 0.2s ease;
+    pointer-events: none; white-space: nowrap;
+  }
+  .meow-bubble.show { opacity: 1; transform: translate(-50%, 0); }
+  .achievement-toast {
+    position: absolute; top: 16px; left: 50%; transform: translate(-50%, -12px);
+    background: var(--moon); color: #241d08; font-size: 13px; font-weight: 600;
+    padding: 10px 20px; border-radius: 16px; opacity: 0; pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease; z-index: 10; white-space: nowrap;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.3);
+  }
+  .achievement-toast.show { opacity: 1; transform: translate(-50%, 0); }
+  .focus-home-reflect-toggle {
+    background: none; border: none; color: var(--text-dim); font-size: 11.5px; text-decoration: underline;
+    cursor: pointer; font-family: inherit; margin-top: 14px;
+  }
+  .focus-home-reflect-panel {
+    text-align: left; background: rgba(255,255,255,0.05); border-radius: 12px; padding: 14px;
+    margin-top: 12px; display: flex; flex-direction: column; gap: 10px; max-width: 380px; width: 100%;
+  }
+  .focus-home-empty { font-size: 40px; margin-bottom: 10px; }
+
+  .next-preview {
+    position: absolute; bottom: 20px; right: 20px; z-index: 2;
+    background: rgba(35,33,65,0.75); backdrop-filter: blur(6px);
+    border: 1px solid var(--ash); border-radius: 14px; padding: 10px 14px;
+    max-width: 190px; text-align: right;
+  }
+  .next-preview-label { font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 3px; }
+  .next-preview-title { font-size: 12px; color: var(--text); line-height: 1.35; }
+  .next-preview-time { font-family: var(--font-mono); font-size: 10px; color: var(--moon-soft); margin-top: 3px; }
+  @media (max-width: 480px) { .next-preview { right: 12px; bottom: 12px; max-width: 140px; padding: 8px 10px; } }
+
+  .goal-row { display: flex; align-items: center; gap: 10px; padding: 10px 2px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .goal-row:last-child { border-bottom: none; }
+  .goal-desc { flex: 1; font-size: 13.5px; }
+  .goal-desc .goal-sub { display: block; font-size: 10.5px; color: var(--text-dim); margin-top: 2px; }
+  .goal-bar-track { width: 60px; height: 5px; background: var(--surface); border-radius: 4px; overflow: hidden; flex-shrink: 0; }
+  .goal-bar-fill { background: var(--moon-soft); height: 100%; }
+  .goal-importance { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); width: 22px; text-align: right; flex-shrink: 0; }
+  .goals-filter { display: flex; gap: 14px; margin-bottom: 14px; }
+  .yearly-header { text-align: center; margin-bottom: 12px; }
+  .yearly-count { font-size: 32px; font-weight: 600; }
+  .yearly-sub { font-size: 11px; color: var(--text-dim); letter-spacing: 0.04em; text-transform: uppercase; }
+  .pace-track { position: relative; height: 10px; background: var(--surface); border-radius: 6px; overflow: visible; margin-bottom: 6px; }
+  .pace-fill { position: absolute; inset: 0; width: 0; background: var(--moon-soft); border-radius: 6px; transition: width 0.4s ease; }
+  .pace-marker { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--blush); }
+  .pace-label { font-size: 11px; color: var(--text-dim); text-align: center; margin-bottom: 16px; }
+  .yearly-list { margin-bottom: 4px; }
+  .offline-note { font-size: 10.5px; color: var(--text-dim); text-align: center; margin-top: 18px; opacity: 0.7; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+(function() {
+"use strict";
+
+/* ---------- storage (localStorage — works fully offline) ---------- */
+const STORAGE_KEY = "momentum-offline-v1";
+const GEO_KEY = "momentum-offline-geo";
+function loadState() { try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : null; } catch(e) { return null; } }
+function saveState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {} }
+function loadGeo() { try { const raw = localStorage.getItem(GEO_KEY); return raw ? JSON.parse(raw) : null; } catch(e) { return null; } }
+function saveGeo(c) { try { localStorage.setItem(GEO_KEY, JSON.stringify(c)); } catch(e) {} }
+
+const todayStr = () => new Date().toISOString().slice(0,10);
+function isMediaUrl(url) { return /\.(gif|png|jpe?g|webp)$/i.test(url || ""); }
+function esc(s) {
+  const d = document.createElement("div");
+  d.textContent = s == null ? "" : String(s);
+  return d.innerHTML.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+/* ---------- schedule data (same rhythm as before) ---------- */
+function getDayType(weekday) {
+  if (weekday === 1 || weekday === 4) return "fasting";
+  if (weekday === 2 || weekday === 3 || weekday === 5) return "nonfasting";
+  if (weekday === 6) return "saturday";
+  return "sunday";
+}
+const EXERCISE_BY_WEEKDAY = {
+  0: "Rest + Walking — 6–8k steps",
+  1: "Squats, Hip Thrust, Lunges, Leg Press — 3–4x10–12",
+  2: "Lat Pulldown, Chest Press, Rows, Shoulder Press — 3x10–12",
+  3: "Plank, Dead Bugs, Leg Raises + Incline Walk — 3 sets + 20 min cardio",
+  4: "RDL, Hip Thrust, Hamstring Curl, Step-ups — 3x10–12",
+  5: "Rows, Pushups, Lateral Raises, Plank — 3x10–12",
+  6: "Cardio (Treadmill / Dance / Cycle) — 30–40 min",
+};
+const MEALS_BY_WEEKDAY = {
+  1: { brunch: "3 eggs + 150g curd + cucumber + flaxseed", dinner: "2 eggs + 200g veggies" },
+  2: { brunch: "3 eggs + cucumber + 1 date", dinner: "120g chicken + ½ cup rice + salad" },
+  3: { brunch: "200g curd + nuts + seeds", dinner: "3 eggs OR 80g paneer + veggies" },
+  4: { brunch: "200g curd + chia seeds", dinner: "3 eggs + veggies" },
+  5: { brunch: "3 eggs + sprouts + 1 date", dinner: "120g chicken + ½ cup rice + salad" },
+  6: { brunch: "40g oats + 2 eggs", dinner: "120g chicken OR 80g paneer + veggies" },
+  0: { brunch: "Fruit + 150g curd + seeds", dinner: "Light: soup + 2 eggs OR curd" },
+};
+const TEMPLATES = {
+  fasting: [
+    ["06:00","Wake up, date + water","rest"], ["06:05","Prayer (Fajr)","spiritual"],
+    ["06:20","Reading","growth"], ["08:00","Walk / Stretch","fitness"],
+    ["08:30","Joblo (deep work)","work"], ["12:30","Sunnah Nap","rest"],
+    ["13:00","Prayer (Dhuhr)","spiritual"], ["13:15","Joblo (deep work)","work"],
+    ["16:45","Prayer (Asr)","spiritual"], ["17:00","Creative work / with Naziya","creative"],
+    ["18:15","Iftār — water + date + eggs/curd","nutrition"], ["18:30","Gym — __EXERCISE__","fitness"],
+    ["19:30","Optional light dinner","nutrition"], ["19:50","Prayer (Isha)","spiritual"],
+    ["20:00","Learning","growth"], ["22:00","Sleep","rest"],
+  ],
+  nonfasting: [
+    ["05:00","Wake up, water + date","rest"], ["05:10","Prayer (Fajr) + Quran","spiritual"],
+    ["05:30","Reading / Reflect","growth"], ["06:00","Joblo (deep work)","work"],
+    ["09:30","Brunch — __BRUNCH__","nutrition"], ["10:00","Joblo (deep work)","work"],
+    ["13:00","Prayer (Dhuhr) + Quran","spiritual"], ["13:30","Sunnah Nap","rest"],
+    ["14:00","Joblo (deep work)","work"], ["17:30","Prayer (Asr) + Quran","spiritual"],
+    ["17:50","Read / Reflect","growth"], ["18:50","Prayer (Maghrib) + Quran","spiritual"],
+    ["19:20","Gym — __EXERCISE__","fitness"], ["20:35","Dinner — __DINNER__","nutrition"],
+    ["20:55","Prayer (Isha) + Quran","spiritual"], ["21:15","Reading (no phone)","growth"],
+    ["22:00","Sleep","rest"],
+  ],
+  saturday: [
+    ["05:00","Wake up, water + date","rest"], ["05:10","Prayer (Fajr)","spiritual"],
+    ["05:30","Quran tilawat","spiritual"], ["06:30","Reading Block 1","growth"],
+    ["09:30","Brunch — __BRUNCH__","nutrition"], ["10:00","Reading Block 2","growth"],
+    ["13:00","Prayer (Dhuhr)","spiritual"], ["13:20","Sunnah Nap","rest"],
+    ["14:00","Reading Block 3","growth"], ["17:30","Prayer (Asr)","spiritual"],
+    ["17:50","Tea + park","creative"], ["18:40","Prayer (Maghrib)","spiritual"],
+    ["19:10","Gym — __EXERCISE__","fitness"], ["20:25","Dinner — __DINNER__","nutrition"],
+    ["20:45","Prayer (Isha)","spiritual"], ["21:05","Reading","growth"],
+    ["22:00","Sleep","rest"],
+  ],
+  sunday: [
+    ["05:00","Wake up, water + date","rest"], ["05:10","Prayer (Fajr)","spiritual"],
+    ["05:30","Walk on terrace","fitness"], ["06:00","Light reading / reflection","growth"],
+    ["07:00","Weekly Reset","work"], ["11:00","Break / relax","rest"],
+    ["11:30","Light planning / journaling","growth"], ["12:30","Me time — __BRUNCH__","nutrition"],
+    ["13:00","Prayer (Dhuhr)","spiritual"], ["13:20","Sunnah Nap","rest"],
+    ["14:00","Outing / social / family","creative"], ["17:00","Prayer (Asr)","spiritual"],
+    ["18:50","Prayer (Maghrib)","spiritual"],
+    ["19:10","Walk on terrace","fitness"], ["19:30","Prayer (Isha) + Quran","spiritual"],
+    ["19:50","Dinner — __DINNER__","nutrition"], ["20:10","Movie","creative"],
+    ["22:00","Sleep","rest"],
+  ],
+};
+const DEFAULT_APP_BY_CAT = {
+  spiritual: "MuslimPro", work: "Laptop", growth: "2026 Goals", fitness: "YouTube — form check",
+  nutrition: "SnapCalorie", rest: null, creative: "Notebook / Instrument",
+};
+const DEFAULT_GOAL_BY_CAT = { spiritual: 12, work: 0, growth: 14, fitness: 11, nutrition: 11, rest: 11, creative: 19 };
+const CAT_COLORS = { spiritual:"#b8aedb", work:"#f5e6c8", growth:"#a8d8c9", fitness:"#d9a3b8", nutrition:"#9fc9a3", rest:"#8f8aa8", creative:"#e0c3d9" };
+const CATEGORIES = [
+  { id:"spiritual", name:"Spiritual" }, { id:"work", name:"Work" }, { id:"growth", name:"Learning" },
+  { id:"fitness", name:"Fitness" }, { id:"nutrition", name:"Nutrition" }, { id:"rest", name:"Rest" }, { id:"creative", name:"Creative" },
+];
+
+function buildTodayTasks(nextOrderStart) {
+  const now = new Date();
+  const weekday = now.getDay();
+  const template = TEMPLATES[getDayType(weekday)];
+  const ex = EXERCISE_BY_WEEKDAY[weekday];
+  const meals = MEALS_BY_WEEKDAY[weekday];
+  let order = nextOrderStart;
+  return template.map(([time, rawTitle, cat]) => {
+    const title = rawTitle.replace("__EXERCISE__", ex||"").replace("__BRUNCH__", meals?meals.brunch:"").replace("__DINNER__", meals?meals.dinner:"");
+    let app = DEFAULT_APP_BY_CAT[cat] || null;
+    if (cat === "growth") app = title.toLowerCase().includes("learning") ? "2026 Goals" : "Moon+ Reader";
+    return {
+      id: Date.now()+Math.random(), title, time, categoryId: cat,
+      resourceUrl: null, app,
+      goalId: DEFAULT_GOAL_BY_CAT[cat] !== undefined ? DEFAULT_GOAL_BY_CAT[cat] : null,
+      note: "", deviation: "", deviationImpact: "none",
+      done: false, missed: false, order: order++,
+    };
+  });
+}
+
+const DEFAULT_LIFE_GOALS = [
+  { desc: "Become a millionaire", part: "Wealth · Freedom · 20s–30s", status: "progress", importance: 10 },
+  { desc: "Be deeply well-connected", part: "Social · Positioning · 20s–40s", status: "progress", importance: 9 },
+  { desc: "Own 3 beautiful homes", part: "Environment · 30s–40s", status: "notyet", importance: 9 },
+  { desc: "Own large grasslands / natural land", part: "Environment · 30s–50s", status: "notyet", importance: 9 },
+  { desc: "Grow flowers and raise animals", part: "Lifestyle · 30s+", status: "notyet", importance: 8 },
+  { desc: "Have 2 cats", part: "Emotional / Home · Anytime", status: "notyet", importance: 7 },
+  { desc: "Travel the world deeply", part: "Experience · Lifetime", status: "progress", importance: 10 },
+  { desc: "Learn 2 serious skills every year", part: "Wisdom · Lifetime", status: "progress", importance: 9 },
+  { desc: "Marry a good, emotionally grounded man", part: "Family · Late 20s–30s", status: "notyet", importance: 10 },
+  { desc: "Have children", part: "Family · 30s", status: "notyet", importance: 10 },
+  { desc: "Build a warm, peaceful home", part: "Family · 30s", status: "notyet", importance: 10 },
+  { desc: "Maintain strong health", part: "Health · Lifetime", status: "progress", importance: 9 },
+  { desc: "Structure life around prayer", part: "Spiritual · Lifetime", status: "progress", importance: 10 },
+  { desc: "Perform Umrah and Hajj", part: "Spiritual · TBD", status: "notyet", importance: 10 },
+  { desc: "Become widely read and intellectually formidable", part: "Wisdom · Lifetime", status: "progress", importance: 9 },
+  { desc: "Write 3 bestselling books", part: "Craft / Legacy · 30s–50s", status: "notyet", importance: 10 },
+  { desc: "Become one of the biggest illustration artists in the world", part: "Creative · Lifetime", status: "notyet", importance: 10 },
+  { desc: "Change at least 100 lives meaningfully", part: "Impact · Lifetime", status: "notyet", importance: 10 },
+  { desc: "Keep a small circle of deep friendships", part: "Social · Lifetime", status: "progress", importance: 9 },
+  { desc: "Live a beautiful, intentional life", part: "Inner Life · Lifetime", status: "progress", importance: 10 },
+  { desc: "Be buried in a warm place where loved ones can visit easily", part: "Legacy · End of life", status: "notyet", importance: 10 },
+];
+
+const DEFAULT_YEARLY_GOALS = [
+  "Friendships art series",
+  "People art series",
+  "Dark art series",
+  "Book for him (writing)",
+  "Compilation of Allah's love in the Quran",
+  "Learn flute",
+  "Learn Salsa / Aerial dance",
+  "Home Acrobatics",
+  "Typing practice",
+  "99 Names of Allah — meaning & explanation",
+  "Watch 100 movies",
+  "Learn 4 Qul",
+  "Learn swimming",
+].map((desc, i) => ({ id: i, desc, done: false, completedDate: null }));
+
+function defaultState() {
+  return {
+    date: todayStr(), points: 0, streak: 0, bestStreak: 0,
+    tasks: [], nextOrder: 0, autoFilledDate: null, dailyThemes: {}, goalActionCounts: {},
+    cycle: { lastStart: "", cycleLength: 28, periodLength: 5 },
+    periodHistory: JSON.parse(JSON.stringify(IMPORTED_PERIOD_HISTORY)),
+    lifeGoals: JSON.parse(JSON.stringify(DEFAULT_LIFE_GOALS)),
+    yearlyGoals: JSON.parse(JSON.stringify(DEFAULT_YEARLY_GOALS)),
+    prayerTimesAppliedDate: null,
+    dayLogs: {},
+    obsidianVault: "",
+  };
+}
+
+// Real logged history imported once from Period Calendar export — 54 cycles, Nov 2020–Aug 2026.
+const IMPORTED_PERIOD_HISTORY = [
+  { start: "2020-11-21", end: "2020-11-26" },
+  { start: "2020-12-18", end: "2020-12-22" },
+  { start: "2021-01-23", end: "2021-01-28" },
+  { start: "2021-02-25", end: "2021-03-02" },
+  { start: "2021-03-29", end: "2021-04-03" },
+  { start: "2021-04-29", end: "2021-05-04" },
+  { start: "2021-06-04", end: "2021-06-08" },
+  { start: "2021-07-21", end: "2021-07-23" },
+  { start: "2021-08-20", end: "2021-08-24" },
+  { start: "2021-09-25", end: "2021-09-29" },
+  { start: "2021-10-24", end: "2021-10-29" },
+  { start: "2021-12-06", end: "2021-12-10" },
+  { start: "2022-01-14", end: "2022-01-18" },
+  { start: "2022-03-02", end: "2022-03-06" },
+  { start: "2022-04-05", end: "2022-04-09" },
+  { start: "2022-05-25", end: "2022-05-29" },
+  { start: "2022-06-21", end: "2022-06-25" },
+  { start: "2022-08-10", end: "2022-08-14" },
+  { start: "2022-09-08", end: "2022-09-12" },
+  { start: "2022-10-09", end: "2022-10-13" },
+  { start: "2022-11-09", end: "2022-11-13" },
+  { start: "2022-12-13", end: "2022-12-17" },
+  { start: "2023-02-05", end: "2023-02-09" },
+  { start: "2023-03-18", end: "2023-03-22" },
+  { start: "2023-04-18", end: "2023-04-22" },
+  { start: "2023-05-24", end: "2023-05-29" },
+  { start: "2023-06-25", end: "2023-06-29" },
+  { start: "2023-07-26", end: "2023-07-30" },
+  { start: "2023-08-25", end: "2023-08-29" },
+  { start: "2023-09-26", end: "2023-09-30" },
+  { start: "2023-10-25", end: "2023-10-29" },
+  { start: "2023-11-19", end: "2023-11-23" },
+  { start: "2024-01-11", end: "2024-01-15" },
+  { start: "2024-02-13", end: "2024-02-17" },
+  { start: "2024-03-16", end: "2024-03-20" },
+  { start: "2024-04-18", end: "2024-04-22" },
+  { start: "2024-05-20", end: "2024-05-24" },
+  { start: "2024-08-24", end: "2024-08-28" },
+  { start: "2024-10-06", end: "2024-10-10" },
+  { start: "2024-10-24", end: "2024-10-28" },
+  { start: "2024-11-20", end: "2024-11-24" },
+  { start: "2024-12-16", end: "2024-12-20" },
+  { start: "2025-02-17", end: "2025-02-21" },
+  { start: "2025-03-24", end: "2025-03-28" },
+  { start: "2025-06-01", end: "2025-06-05" },
+  { start: "2025-07-26", end: "2025-07-30" },
+  { start: "2025-09-27", end: "2025-10-01" },
+  { start: "2025-11-04", end: "2025-11-08" },
+  { start: "2025-11-24", end: "2025-11-28" },
+  { start: "2025-12-28", end: "2026-01-07" },
+  { start: "2026-03-22", end: "2026-03-23" },
+  { start: "2026-05-08", end: "2026-05-12" },
+  { start: "2026-06-19", end: "2026-06-24" },
+  { start: "2026-08-12", end: "2026-08-17" },
+];
+
+function median(arr) {
+  if (arr.length === 0) return null;
+  const s = [...arr].sort((a,b) => a-b);
+  const mid = Math.floor(s.length/2);
+  return s.length % 2 ? s[mid] : (s[mid-1]+s[mid])/2;
+}
+
+function computeCycleStats(history) {
+  if (!history || history.length === 0) return null;
+  const sorted = [...history].sort((a,b) => new Date(a.start) - new Date(b.start));
+  const periodLens = sorted.filter(e => e.end).map(e => Math.round((new Date(e.end) - new Date(e.start))/86400000) + 1);
+  const cycleLens = [];
+  for (let i = 0; i < sorted.length - 1; i++) {
+    const gap = Math.round((new Date(sorted[i+1].start) - new Date(sorted[i].start)) / 86400000);
+    if (gap >= 15 && gap <= 60) cycleLens.push(gap); // exclude non-representative gaps (e.g. pregnancy-related)
+  }
+  const avgCycleLength = cycleLens.length ? Math.round(median(cycleLens)) : 28;
+  const avgPeriodLength = periodLens.length ? Math.round(median(periodLens)) : 5;
+  const lastEntry = sorted[sorted.length - 1];
+  return { avgCycleLength, avgPeriodLength, lastStart: lastEntry.start, cyclesUsed: cycleLens.length, openEntry: !lastEntry.end };
+}
+
+function dayOfYear(date) { const start = new Date(date.getFullYear(), 0, 0); return Math.floor((date - start) / 86400000); }
+function daysInYear(y) { return ((y % 4 === 0 && y % 100 !== 0) || y % 400 === 0) ? 366 : 365; }
+
+function getMoonPhase(date) {
+  const synodic = 29.530588853;
+  const knownNewMoon = Date.UTC(2000, 0, 6, 18, 14, 0);
+  const diffDays = (date.getTime() - knownNewMoon) / 86400000;
+  let age = diffDays % synodic;
+  if (age < 0) age += synodic;
+  const illumination = (1 - Math.cos((2 * Math.PI * age) / synodic)) / 2;
+  let name;
+  if (age < 1.84566) name = "New Moon";
+  else if (age < 5.53699) name = "Waxing Crescent";
+  else if (age < 9.22831) name = "First Quarter";
+  else if (age < 12.91963) name = "Waxing Gibbous";
+  else if (age < 16.61096) name = "Full Moon";
+  else if (age < 20.30228) name = "Waning Gibbous";
+  else if (age < 23.99361) name = "Last Quarter";
+  else if (age < 27.68493) name = "Waning Crescent";
+  else name = "New Moon";
+  return { age, illumination, pct: Math.round(illumination * 100), name };
+}
+
+function getCycleInfo(periodHistory, fallbackCycle) {
+  const stats = computeCycleStats(periodHistory);
+  let lastStart, cycleLen, periodLen;
+  if (stats) {
+    lastStart = stats.lastStart; cycleLen = stats.avgCycleLength; periodLen = stats.avgPeriodLength;
+  } else if (fallbackCycle && fallbackCycle.lastStart) {
+    lastStart = fallbackCycle.lastStart; cycleLen = fallbackCycle.cycleLength || 28; periodLen = fallbackCycle.periodLength || 5;
+  } else {
+    return null;
+  }
+  const last = new Date(lastStart + "T00:00:00");
+  const today = new Date(todayStr() + "T00:00:00");
+  const diffDays = Math.round((today - last) / 86400000);
+  const cycleDay = (((diffDays % cycleLen) + cycleLen) % cycleLen) + 1;
+  const ovulationDay = Math.max(periodLen + 2, cycleLen - 14);
+  let phase, pct;
+  if (cycleDay <= periodLen) { phase = "Menstrual"; pct = 0; }
+  else if (cycleDay < ovulationDay) { phase = "Follicular"; pct = Math.round(((cycleDay - periodLen) / (ovulationDay - periodLen)) * 55); }
+  else if (cycleDay <= ovulationDay + 1) { phase = "Ovulation"; pct = 100; }
+  else {
+    phase = "Luteal";
+    const lutealLen = Math.max(1, cycleLen - (ovulationDay + 1));
+    const prog = cycleDay - (ovulationDay + 1);
+    pct = Math.round(100 - (prog / lutealLen) * 100);
+  }
+  return { cycleDay, phase, pct: Math.max(0, Math.min(100, pct)), avgCycleLength: cycleLen, avgPeriodLength: periodLen, cyclesUsed: stats ? stats.cyclesUsed : 0 };
+}
+
+/* ---------- astronomy: sunrise/sunset + prayer times (no network, pure math) ---------- */
+
+/* ---------- astronomy: sunrise/sunset + prayer times (no network, pure math) ---------- */
+function getSunTimes(lat, lon, date) {
+  const rad = Math.PI/180;
+  const dayOfYear = Math.floor((date - new Date(date.getFullYear(),0,0)) / 86400000);
+  const lngHour = lon / 15;
+  function calc(isSunrise) {
+    const t = dayOfYear + ((isSunrise?6:18) - lngHour)/24;
+    const M = 0.9856*t - 3.289;
+    let L = M + 1.916*Math.sin(M*rad) + 0.020*Math.sin(2*M*rad) + 282.634;
+    L = (L+360)%360;
+    let RA = (1/rad)*Math.atan(0.91764*Math.tan(L*rad));
+    RA = (RA+360)%360;
+    const Lq = Math.floor(L/90)*90, RAq = Math.floor(RA/90)*90;
+    RA = (RA + (Lq - RAq)) / 15;
+    const sinDec = 0.39782*Math.sin(L*rad);
+    const cosDec = Math.cos(Math.asin(sinDec));
+    const cosH = (Math.cos(90.833*rad) - sinDec*Math.sin(lat*rad)) / (cosDec*Math.cos(lat*rad));
+    if (cosH > 1 || cosH < -1) return null;
+    let H = isSunrise ? 360 - (1/rad)*Math.acos(cosH) : (1/rad)*Math.acos(cosH);
+    H = H/15;
+    const T = H + RA - 0.06571*t - 6.622;
+    return ((T - lngHour) + 24) % 24;
+  }
+  const sunriseUT = calc(true), sunsetUT = calc(false);
+  if (sunriseUT == null || sunsetUT == null) return null;
+  const utcMidnight = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+  return { sunrise: new Date(utcMidnight + sunriseUT*3600000), sunset: new Date(utcMidnight + sunsetUT*3600000) };
+}
+function hexToRgb(hex) { hex = hex.replace('#',''); return { r:parseInt(hex.substr(0,2),16), g:parseInt(hex.substr(2,2),16), b:parseInt(hex.substr(4,2),16) }; }
+function lerpHex(hex1, hex2, t) {
+  t = Math.max(0, Math.min(1, t));
+  const c1 = hexToRgb(hex1), c2 = hexToRgb(hex2);
+  return `rgb(${Math.round(c1.r+(c2.r-c1.r)*t)},${Math.round(c1.g+(c2.g-c1.g)*t)},${Math.round(c1.b+(c2.b-c1.b)*t)})`;
+}
+const SKY = {
+  night: { center:"#2b2750", edge:"#17162a" },
+  dawn:  { center:"#caa06e", edge:"#3a3560" },
+  day:   { center:"#6b7bb0", edge:"#3d4a78" },
+  noon:  { center:"#f0e2b8", edge:"#6f8fc7" },
+  dusk:  { center:"#c97a52", edge:"#4a3a68" },
+};
+function getSkyColors(now, sunTimes) {
+  if (!sunTimes) return SKY.night;
+  const WINDOW = 60*60*1000;
+  const tNow = now.getTime(), tSunrise = sunTimes.sunrise.getTime(), tSunset = sunTimes.sunset.getTime();
+  const tNoon = (tSunrise + tSunset) / 2;
+  const blend = (a,b,t) => ({ center: lerpHex(a.center,b.center,t), edge: lerpHex(a.edge,b.edge,t) });
+  const dayShoulder1 = Math.min(tSunrise + WINDOW, tNoon);
+  const dayShoulder2 = Math.max(tSunset - WINDOW, tNoon);
+  const keyframes = [
+    { t: tSunrise - WINDOW, c: SKY.night },
+    { t: tSunrise, c: SKY.dawn },
+    { t: dayShoulder1, c: SKY.day },
+    { t: tNoon, c: SKY.noon },
+    { t: dayShoulder2, c: SKY.day },
+    { t: tSunset, c: SKY.dusk },
+    { t: tSunset + WINDOW, c: SKY.night },
+  ];
+  if (tNow <= keyframes[0].t || tNow >= keyframes[keyframes.length-1].t) return SKY.night;
+  for (let i = 0; i < keyframes.length - 1; i++) {
+    if (tNow >= keyframes[i].t && tNow <= keyframes[i+1].t) {
+      const span = keyframes[i+1].t - keyframes[i].t;
+      const frac = span <= 0 ? 0 : (tNow - keyframes[i].t) / span;
+      return blend(keyframes[i].c, keyframes[i+1].c, frac);
+    }
+  }
+  return SKY.night;
+}
+function solarPosition(date) {
+  const rad = Math.PI/180;
+  const J2000 = Date.UTC(2000,0,1,12,0,0);
+  const n = (date.getTime() - J2000) / 86400000;
+  const L = (280.460 + 0.9856474*n) % 360;
+  const g = ((357.528 + 0.9856003*n) % 360) * rad;
+  const lambda = (L + 1.915*Math.sin(g) + 0.020*Math.sin(2*g)) * rad;
+  const eps = (23.439 - 0.0000004*n) * rad;
+  const decl = Math.asin(Math.sin(eps) * Math.sin(lambda)) / rad;
+  let RA = Math.atan2(Math.cos(eps)*Math.sin(lambda), Math.cos(lambda)) / rad;
+  RA = ((RA % 360) + 360) % 360;
+  let eqt = (L - RA) * 4;
+  if (eqt > 20) eqt -= 1440;
+  if (eqt < -20) eqt += 1440;
+  return { decl, eqt };
+}
+function hourAngle(lat, decl, angle, mode) {
+  const rad = Math.PI/180;
+  const num = mode === "altitude"
+    ? Math.sin(angle*rad) - Math.sin(lat*rad)*Math.sin(decl*rad)
+    : -Math.sin(angle*rad) - Math.sin(lat*rad)*Math.sin(decl*rad);
+  const den = Math.cos(lat*rad) * Math.cos(decl*rad);
+  const cosH = num/den;
+  if (cosH > 1 || cosH < -1 || isNaN(cosH)) return null;
+  return Math.acos(cosH) / rad / 15;
+}
+function getPrayerTimes(lat, lon, date, opts) {
+  const o = Object.assign({ fajrAngle: 18, ishaAngle: 17, asrFactor: 2 }, opts || {}); // Hanafi Asr
+  const { decl, eqt } = solarPosition(date);
+  const solarNoonUTC = 12 - (lon/15) - (eqt/60);
+  const tFajr = hourAngle(lat, decl, o.fajrAngle, "depression");
+  const tSun = hourAngle(lat, decl, 0.833, "depression");
+  const rad = Math.PI/180;
+  const asrAngle = Math.atan(1 / (o.asrFactor + Math.tan(Math.abs(lat - decl)*rad))) / rad;
+  const tAsr = hourAngle(lat, decl, asrAngle, "altitude");
+  const tIsha = hourAngle(lat, decl, o.ishaAngle, "depression");
+  if ([tFajr,tSun,tAsr,tIsha].some(t => t == null)) return null;
+  const toDate = (utcHours) => new Date(Date.UTC(date.getFullYear(),date.getMonth(),date.getDate()) + utcHours*3600000);
+  return {
+    fajr: toDate(solarNoonUTC - tFajr), sunrise: toDate(solarNoonUTC - tSun),
+    dhuhr: toDate(solarNoonUTC + 0.05), asr: toDate(solarNoonUTC + tAsr),
+    maghrib: toDate(solarNoonUTC + tSun), isha: toDate(solarNoonUTC + tIsha),
+  };
+}
+function fmtTime(d) { return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0"); }
+const FALLBACK_COORDS = { lat: 40.7895, lon: -74.0565 };
+
+const APP_PACKAGES = {
+  "muslimpro": "com.bitsmedia.android.muslimpro",
+  "snapcalorie": "com.snapcalorie.alpha002",
+  "periodcalendar": "com.veevapps.periodcalendar",
+  "moonreader": "com.flyersoft.moonreaderp",
+};
+function appLaunchUrl(name) {
+  const key = (name || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  const pkg = APP_PACKAGES[key];
+  if (pkg) {
+    const fallback = encodeURIComponent(`https://play.google.com/store/apps/details?id=${pkg}`);
+    return `intent://#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=${pkg};S.browser_fallback_url=${fallback};end`;
+  }
+  return `https://play.google.com/store/search?q=${encodeURIComponent(name)}&c=apps`;
+}
+
+/* ---------- app state ---------- */
+let state = loadState() || defaultState();
+if (!state.cycle) state.cycle = { lastStart: "", cycleLength: 28, periodLength: 5 };
+if (!state.lifeGoals) state.lifeGoals = JSON.parse(JSON.stringify(DEFAULT_LIFE_GOALS));
+if (!state.yearlyGoals) state.yearlyGoals = JSON.parse(JSON.stringify(DEFAULT_YEARLY_GOALS));
+if (!state.prayerBackfillDone) {
+  const prayerNames = ["fajr", "dhuhr", "asr", "maghrib", "isha"];
+  const existingTitles = state.tasks.map(t => t.title.toLowerCase());
+  const missing = prayerNames.filter(p => {
+    if (p === "maghrib") return !existingTitles.some(t => t.includes("maghrib") || t.includes("iftar") || t.includes("iftār"));
+    return !existingTitles.some(t => t.includes(p));
+  });
+  if (missing.length && state.tasks.length > 0) {
+    const defaultTimes = { fajr: "05:10", dhuhr: "13:00", asr: "17:00", maghrib: "18:50", isha: "20:00" };
+    missing.forEach(p => {
+      state.tasks.push({
+        id: Date.now() + Math.random(), title: `Prayer (${p[0].toUpperCase()+p.slice(1)})`, time: defaultTimes[p],
+        categoryId: "spiritual", subsectionId: null, resourceUrl: null, app: DEFAULT_APP_BY_CAT.spiritual,
+        goalId: DEFAULT_GOAL_BY_CAT.spiritual, note: "", deviation: "", deviationImpact: "none",
+        done: false, missed: false, order: state.nextOrder++,
+      });
+    });
+  }
+  state.prayerBackfillDone = true;
+  if (missing.length) state.prayerTimesAppliedDate = null;
+}
+if (!state.sleepBackfillDone) {
+  const hasSleep = state.tasks.some(t => t.title.toLowerCase().includes("sleep"));
+  if (!hasSleep && state.tasks.length > 0) {
+    state.tasks.push({
+      id: Date.now() + Math.random(), title: "Sleep", time: "22:00",
+      categoryId: "rest", subsectionId: null, resourceUrl: null, app: null,
+      goalId: DEFAULT_GOAL_BY_CAT.rest, note: "", deviation: "", deviationImpact: "none",
+      done: false, missed: false, order: state.nextOrder++,
+    });
+  }
+  state.sleepBackfillDone = true;
+}
+if (!state.readingAppBackfillDone) {
+  state.tasks = state.tasks.map(t => {
+    if (t.categoryId === "growth" && (t.app === "Kindle / Book" || !t.app)) {
+      return { ...t, app: t.title.toLowerCase().includes("learning") ? "2026 Goals" : "Moon+ Reader" };
+    }
+    return t;
+  });
+  state.readingAppBackfillDone = true;
+}
+if (!state.dayLogs) state.dayLogs = {};
+if (state.obsidianVault === undefined) state.obsidianVault = "";
+if (!state.periodHistory) state.periodHistory = JSON.parse(JSON.stringify(IMPORTED_PERIOD_HISTORY));
+if (state.date !== todayStr()) {
+  const daysSince = Math.round((new Date(todayStr()) - new Date(state.date)) / 86400000);
+  if (daysSince > 1) state.streak = 0;
+  if (state.tasks.length > 0) state.dayLogs[state.date] = state.tasks;
+  state.date = todayStr();
+  state.tasks = [];
+}
+if (state.autoFilledDate !== todayStr() && state.tasks.length === 0) {
+  const fresh = buildTodayTasks(state.nextOrder);
+  state.tasks = fresh;
+  state.nextOrder += fresh.length;
+  state.autoFilledDate = todayStr();
+}
+saveState();
+
+let coords = loadGeo();
+let view = "focus";
+let expandedId = null;
+let showCycle = false;
+let showTimer = false;
+let showObsidian = false;
+let showAdvancedAdd = false;
+let goalFilter = "all";
+let reflectOpen = false;
+const catMap = Object.fromEntries(CATEGORIES.map(c => [c.id, c]));
+
+const FOCUS_LEN = 25*60, BREAK_LEN = 5*60;
+let timeLeft = FOCUS_LEN, running = false, tMode = "focus", timerInterval = null;
+
+/* ---------- derived values ---------- */
+function computed() {
+  const total = state.tasks.length;
+  const doneCount = state.tasks.filter(t=>t.done).length;
+  const pct = total === 0 ? 0 : Math.round((doneCount/total)*100);
+  const linkedCompletedToday = state.tasks.filter(t => t.done && t.goalId != null).length;
+  const alignmentPct = doneCount === 0 ? 0 : Math.round((linkedCompletedToday / doneCount) * 100);
+  const sortedTasks = [...state.tasks].sort((a,b) => (a.time||"99:99").localeCompare(b.time||"99:99") || a.order-b.order);
+  const focusQueue = sortedTasks.filter(t => !t.done && !t.missed);
+  const cycleInfo = getCycleInfo(state.periodHistory, state.cycle);
+  const moonPhase = getMoonPhase(new Date());
+  const maxGoalActions = Math.max(1, ...Object.values(state.goalActionCounts));
+  const linkedTodayCount = state.tasks.filter(t => t.goalId != null).length;
+  const goalPct = linkedTodayCount ? Math.round(100 / linkedTodayCount) : 0;
+  return { total, doneCount, pct, alignmentPct, sortedTasks, focusQueue, cycleInfo, moonPhase, maxGoalActions, goalPct };
+}
+
+/* ---------- mutations ---------- */
+function toggleDone(id) {
+  const task = state.tasks.find(t=>t.id===id);
+  const wasDone = task?.done;
+  state.tasks = state.tasks.map(t => t.id === id ? { ...t, done: !t.done, missed: false } : t);
+  if (task && task.goalId != null) {
+    const cur = state.goalActionCounts[task.goalId] || 0;
+    state.goalActionCounts[task.goalId] = wasDone ? Math.max(0, cur - 1) : cur + 1;
+  }
+  state.points = Math.max(0, state.points + (wasDone ? -10 : 10));
+  saveState(); render();
+}
+function markMissed(id) { state.tasks = state.tasks.map(t => t.id===id ? {...t, missed: !t.missed, done:false} : t); saveState(); render(); }
+function delTask(id) { state.tasks = state.tasks.filter(t => t.id !== id); saveState(); render(); }
+function updateTask(id, patch) { state.tasks = state.tasks.map(t => t.id === id ? { ...t, ...patch } : t); saveState(); }
+function setTheme(val) { state.dailyThemes[state.date] = val; saveState(); }
+function setCycle(patch) { Object.assign(state.cycle, patch); saveState(); renderMoon(); }
+function logPeriodStart() {
+  const hist = state.periodHistory;
+  const last = hist[hist.length - 1];
+  if (last && last.start === todayStr()) return;
+  hist.push({ start: todayStr(), end: null });
+  saveState(); render();
+}
+function logPeriodEnd() {
+  const hist = state.periodHistory;
+  const last = hist[hist.length - 1];
+  if (!last || last.end) return;
+  last.end = todayStr();
+  saveState(); render();
+}
+function addLifeGoal(goal) { state.lifeGoals.push(goal); saveState(); render(); }
+function toggleYearlyGoal(id) {
+  const g = state.yearlyGoals.find(y => y.id === id);
+  if (!g) return;
+  const wasDone = g.done;
+  g.done = !g.done;
+  g.completedDate = g.done ? todayStr() : null;
+  state.points = Math.max(0, state.points + (wasDone ? -50 : 50));
+  if (!wasDone) celebrateGoal();
+  saveState(); render();
+}
+function addYearlyGoal(desc) {
+  if (!desc.trim()) return;
+  const nextId = Math.max(0, ...state.yearlyGoals.map(y => y.id)) + 1;
+  state.yearlyGoals.push({ id: nextId, desc: desc.trim(), done: false, completedDate: null });
+  saveState(); render();
+}
+const ANALYZER_PROMPT = `Run the following prompt on the logs I'm about to give you.
+
+PART 1
+
+What are things which could revolutionize my life in terms of 1. health and fitness 2. finances 3. knowledge and skills 4. social life 5. life satisfaction and experiences?
+
+For example, here is a table on time:
+
+Rating   Description                       Definition        Yearly equivalent (if repeated daily)
+1   Incremental | Helpful            > 1 min/day        > 6 hours per year
+2   Efficient | Substantial          > 5 min/day        ~1 day per year
+3   High-Impact | Significant        > 20 min/day       ~5 days per year
+4   Strategic | Liberating           > 1.5 hours/day    ~23 days per year
+5   Revolutionary | Life-Changing    > 6 hours/day       ~3 months per year
+
+Answer these questions:
+
+Questions:
+
+Reflection
+If you could turn back the clock on today, and do it differently, what would it be and when?
+Desire
+If money were no concern and I had more than I ever wanted, what would I actually do? Can I do more of those things now?
+Would I make the same choices if no one ever knew?
+Was that Noor style? If everyone was silhouettes, but only dialogues and actions were shown, can you tell that it was you?
+Execution
+If I am doing something, am I pursuing the highest and hardest goal? It takes about the same effort.
+How would I do this 10x bigger?
+What is my one-day plan, and how can I do the most important part of it in the first hour? (Peter Thiel, adapted)
+What tiny move would let ten things align by themselves? (Zhuang Zhou / Taoism style, Wu-wei effortless action)
+What can be automated, delegated, decided, or deleted? No limbo.
+Leverage others: template, reuse, or borrow before inventing. Has this been done before by anyone?
+Which system failed today? How will I upgrade it?
+Is feedback frequent enough and am I tracking enough for my daily goals?
+Experience
+What has been the happiest moment of my life. Brought me the most joy. And why?
+When was the last time an hour flew by, and what was I doing?
+Conditional | Negative
+Seen from above (zoomed out), how large is this problem?
+99% of effort is wasted. Will this matter in 10 days? 10 years?
+
+Lastly answer these questions:
+
+Identity
+Who am I when no role, label, nor possessions stick to me? (Zhuang Zhi / Taoism style)
+Be my own hero. How can I be the person I want to be today?
+Stasis is a lie. In every moment we are either becoming better or worse. Who am I becoming? What identity am I voting for with today's actions?
+How will I carry myself with dignity as an ambassador of [all humans]? Act as if (A. your rival, B. your ideal self, C. your future self, D. who you love or respect, E. God, or F. a livestream of everyone you know) is watching you. If everyone acted this way, would I endorse that world? What will I do to earn self-esteem and pride today?
+Execution
+For the love of my life, am I pursuing the things I want the best I can, trying as hard as I can? What is worth doing is worth doing well.
+When is a time I tried as hard as I could? What moment in my journey made me fight even harder to get to where I am right now?
+What skill or habit am I deliberately practicing today? What habit is this reinforcing in me? Turn work into training. What did I learn, develop, or make some progress on today? Journey of a thousand steps.
+
+PART 2
+
+Based on the following logs, perform analysis and point out
+
+major progress I made
+new things I tried or did, including things I failed at
+moments of elation
+three specific different things I did which were probably large wastes of time
+routine/daily things I do which are probably wastes of time
+the list of things which did and did not align with each of my 6 core values, which are:
+
+"### Values
+
+Self-Respect
+Discipline
+Creation
+Vitality
+Kindness
+Love
+Definitions
+Self-Respect — The refusal to tolerate mistreatment, from others or from myself. Living in a way that does not produce shame, disgust, or quiet self-contempt.
+Discipline — The practice of governing my body, time, and attention deliberately. Using structure and physical effort to create stability, clarity, and self-trust.
+Creation — The ability and responsibility to generate my own thoughts, interpretations, and actions rather than borrowing them from others. Refusing mental passivity; choosing originality of mind and agency in action.
+Vitality — The pursuit of aliveness through movement, health, travel, nature, and new environments. Refusing a sedentary, numbing, couch-potato existence that dulls the senses and spirit.
+Kindness — Moving through the world with warmth and care without surrendering strength or boundaries. Remaining human, gentle, and non-cruel even while being disciplined and self-directed.
+Love — The willingness to feel deeply, care openly, and remain emotionally alive rather than armored. An orientation of openness, care, and reverence toward life, people, nature, and existence itself." And then overall generally whether how I spent my time today has been aligned with my stated values. Here is some stuff to inspire doing this section: "Daily integrity audits (the harder, truer path) Core idea: Examine decisions where you aligned (or didn't) with your stated values/standards. Questions: Where did I take the harder, truer option today? Where did I duck it? What was the exact rationalization I used? What value/standard needs tightening (specific wording)? Metrics Integrity deltas (count of alignments vs compromises). Rationalization catalogue (unique excuses down over time). Repair actions executed (apologies, fixes, refunds, credit given). To write
+List of things done today which did or did not embody each of my values.
+Reasons for doing them.
+Rating out of 5 how well did you pursue your values today."
+Here are 6 "Hero Signal Clusters Typically Admired: 1. Competence (skill, results) 2. Character (integrity, boundaries) - Sacred no 3. Courage - Sovereignty display - acting from internal authority rather than external permission 4. Resilience - Pain tolerance - How chose to handle adversity (effectiveness) - Values under pressure - Competence (efficiency) under chaos - Character of absorbed hardship, resilience plus retained humanity 5. Generativity (lifting others) 6. Transcendence (meaning, art/spirit)." Now, here is kind of a detailed explanation and analysis of tracking acts of courage and micro-acts of courage, which is just one of the six hero signal clusters: "- Daily heroism and courage inventory. Core idea: Track moments where you acted despite fear/uncertainty. Goal: Expand your action frontier; reduce avoidance. Unit of analysis: Specific behaviors in scary/uncertain contexts (ask, risk, reveal, try). Trigger to log: You notice 'I'd rather avoid this' and do it anyway. Questions: Where did I feel fear and act anyway today? What was the smallest courageous move I made? What fear theme recurred (rejection, failure, judgment)? What's the next rep? What courage muscle grew (asking, exposing work, conflict, novelty)? Metrics Count of acts (aim \u22652 micro-acts/day). Time-to-act (fear to action latency). Courage diversity (types of risks taken). Graded intensity (1-5 discomfort score)." In a format similar to that, extract and analyze/track/list things from my time logs for each of the six hero signal clusters. If there were none relevant, just write "None" and skip that hero signal cluster.
+Progress and Growth, make a brief list answer each of these questions: What new things did I learn or realize today that will still matter in a year or is reusable? Which systems did I improve or formalize today? And what was each system's quantified effect (time saved / friction removed)?
+(Lastly, separately, any additional meta observations you might have if you took the role of an external performance psychologist.)`;
+
+function formatDayMarkdown(dateStr, theme, tasks) {
+  const lines = [
+    "---", `date: ${dateStr}`, "---", "",
+    `# ${dateStr}`, "", `**Theme:** ${theme || "—"}`, "", "## Tasks",
+  ];
+  tasks.forEach(t => {
+    const box = t.done ? "[x]" : "[ ]";
+    const status = t.missed ? " *(missed)*" : "";
+    lines.push(`- ${box} ${t.time !== "--:--" ? t.time + " " : ""}${t.title}${status}`);
+    if (t.note) lines.push(`    - Note: ${t.note}`);
+    if (t.deviation) lines.push(`    - Deviation (${t.deviationImpact}): ${t.deviation}`);
+  });
+  return lines.join("\n");
+}
+function exportToObsidian(dateStr, tasks) {
+  if (!state.obsidianVault) return false;
+  const content = formatDayMarkdown(dateStr, state.dailyThemes[dateStr], tasks);
+  const url = `obsidian://new?vault=${encodeURIComponent(state.obsidianVault)}&name=${encodeURIComponent(dateStr)}&content=${encodeURIComponent(content)}&overwrite=true&silent=true`;
+  window.location.href = url;
+  return true;
+}
+function buildAnalysisPrompt(dateStr) {
+  const tasks = dateStr === state.date ? state.tasks : (state.dayLogs[dateStr] || []);
+  const theme = state.dailyThemes[dateStr] || "";
+  const log = formatDayMarkdown(dateStr, theme, tasks);
+  const themeInstruction = theme
+    ? `\n\nAlso: the theme/intention I set for today was "${theme}". Rate out of 5 how well my day's actions actually lived up to that theme, and explain your reasoning with specific reference to what I did or didn't do.`
+    : `\n\nAlso: I didn't set a theme for today \u2014 note that plainly rather than inventing one.`;
+  return `${ANALYZER_PROMPT}${themeInstruction}\n\n---\n\nHere are today's logs:\n\n${log}`;
+}
+function analyzeWithClaude() {
+  const prompt = buildAnalysisPrompt(state.date);
+  const openClaude = () => window.open("https://claude.ai/new", "_blank");
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(prompt).then(openClaude).catch(() => {
+      window.prompt("Couldn't auto-copy \u2014 copy this manually, then paste into Claude:", prompt);
+      openClaude();
+    });
+  } else {
+    window.prompt("Copy this, then paste into Claude:", prompt);
+    openClaude();
+  }
+}
+function closeOut() {
+  const { total, pct } = computed();
+  if (total === 0) return;
+  state.streak = pct >= 70 ? state.streak + 1 : 0;
+  state.bestStreak = Math.max(state.bestStreak, state.streak);
+  state.dayLogs[state.date] = state.tasks;
+  exportToObsidian(state.date, state.tasks);
+  saveState(); render();
+}
+function setObsidianVault(v) { state.obsidianVault = v; saveState(); }
+function focusDone(id) {
+  const task = state.tasks.find(t=>t.id===id);
+  if (task && task.goalId != null) state.goalActionCounts[task.goalId] = (state.goalActionCounts[task.goalId]||0) + 1;
+  state.tasks = state.tasks.map(t => t.id===id?{...t,done:true,missed:false}:t);
+  state.points += 10;
+  reflectOpen = false;
+  saveState(); render();
+}
+function focusSkip(id) {
+  state.tasks = state.tasks.map(t => t.id===id?{...t,order:state.nextOrder}:t);
+  state.nextOrder += 1;
+  reflectOpen = false;
+  saveState(); render();
+}
+function addQuickTask() {
+  const timeEl = document.getElementById("qTime"), titleEl = document.getElementById("qTitle");
+  const title = titleEl.value.trim();
+  if (!title) return;
+  const catEl = document.getElementById("qCat"), appEl = document.getElementById("qApp"),
+        urlEl = document.getElementById("qUrl"), goalEl = document.getElementById("qGoal");
+  const t = {
+    id: Date.now(), title, time: timeEl.value || "--:--",
+    categoryId: catEl ? catEl.value : "spiritual",
+    resourceUrl: (urlEl && urlEl.value.trim()) || null,
+    app: (appEl && appEl.value.trim()) || null,
+    goalId: (goalEl && goalEl.value !== "") ? Number(goalEl.value) : null,
+    note: "", deviation: "", deviationImpact: "none",
+    done: false, missed: false, order: state.nextOrder,
+  };
+  state.tasks.push(t); state.nextOrder += 1;
+  saveState();
+  timeEl.value = ""; titleEl.value = "";
+  if (appEl) appEl.value = ""; if (urlEl) urlEl.value = ""; if (goalEl) goalEl.value = "";
+  render();
+}
+function addGoalFromForm() {
+  const desc = document.getElementById("newGoalDesc").value.trim();
+  if (!desc) return;
+  const part = document.getElementById("newGoalPart").value.trim() || "—";
+  const status = document.getElementById("newGoalStatus").value;
+  const importance = Number(document.getElementById("newGoalImportance").value) || 8;
+  addLifeGoal({ desc, part, status, importance });
+}
+
+/* ---------- location + ambient sky + prayer times ---------- */
+function paintSkyNow() {
+  const useCoords = coords || FALLBACK_COORDS;
+  const sunTimes = getSunTimes(useCoords.lat, useCoords.lon, new Date());
+  const c = getSkyColors(new Date(), sunTimes);
+  const app = document.getElementById("app");
+  if (app) app.style.background = `radial-gradient(ellipse at 25% -10%, ${c.center} 0%, ${c.edge} 60%)`;
+}
+function resolveLocation() {
+  paintSkyNow();
+  setInterval(paintSkyNow, 2*60*1000);
+  if (coords) { afterCoords(); return; }
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      pos => { coords = { lat: pos.coords.latitude, lon: pos.coords.longitude }; saveGeo(coords); afterCoords(); paintSkyNow(); },
+      () => { coords = FALLBACK_COORDS; saveGeo(coords); afterCoords(); },
+      { timeout: 6000 }
+    );
+  } else { coords = FALLBACK_COORDS; afterCoords(); }
+}
+function afterCoords() {
+  applyPrayerTimes();
+}
+function applySky() { paintSkyNow(); }
+function applyPrayerTimes() {
+  if (!coords) return;
+  const guard = todayStr() + "-hanafi";
+  if (state.prayerTimesAppliedDate === guard) return;
+  if (state.tasks.length === 0) return;
+  const pt = getPrayerTimes(coords.lat, coords.lon, new Date());
+  if (!pt) return;
+  const nameMap = [["fajr",pt.fajr],["dhuhr",pt.dhuhr],["asr",pt.asr],["maghrib",pt.maghrib],["isha",pt.isha],["iftār",pt.maghrib],["iftar",pt.maghrib]];
+  state.tasks = state.tasks.map(t => {
+    const lower = t.title.toLowerCase();
+    const match = nameMap.find(([name]) => lower.includes(name));
+    return match ? { ...t, time: fmtTime(match[1]) } : t;
+  });
+  state.prayerTimesAppliedDate = guard;
+  saveState(); render();
+}
+
+const STALE_HOURS = 2;
+function clearStaleTasks() {
+  const now = new Date();
+  let changed = false;
+  state.tasks = state.tasks.map(t => {
+    if (t.done || t.missed || !t.time || t.time === "--:--") return t;
+    const [h,m] = t.time.split(":").map(Number);
+    const taskTime = new Date(); taskTime.setHours(h, m, 0, 0);
+    if ((now - taskTime) / 3600000 > STALE_HOURS) { changed = true; return { ...t, missed: true }; }
+    return t;
+  });
+  if (changed) { saveState(); render(); }
+}
+
+/* ---------- timer ---------- */
+function playChirp() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const now = ctx.currentTime;
+    const jitter = 0.92 + Math.random() * 0.16;
+
+    const master = ctx.createGain();
+    master.gain.setValueAtTime(0.0001, now);
+    master.gain.exponentialRampToValueAtTime(0.28, now + 0.04);
+    master.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+    master.connect(ctx.destination);
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(2000, now);
+    filter.frequency.exponentialRampToValueAtTime(700, now + 0.5);
+    filter.connect(master);
+
+    const osc = ctx.createOscillator();
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(520 * jitter, now);
+    osc.frequency.exponentialRampToValueAtTime(860 * jitter, now + 0.09);
+    osc.frequency.exponentialRampToValueAtTime(300 * jitter, now + 0.48);
+    osc.connect(filter);
+
+    const vibrato = ctx.createOscillator();
+    vibrato.frequency.value = 14;
+    const vibratoGain = ctx.createGain();
+    vibratoGain.gain.value = 16;
+    vibrato.connect(vibratoGain);
+    vibratoGain.connect(osc.frequency);
+
+    osc.start(now); osc.stop(now + 0.52);
+    vibrato.start(now); vibrato.stop(now + 0.52);
+  } catch (e) {}
+}
+function showToast(message) {
+  const app = document.getElementById("app");
+  let el = document.getElementById("achievementToast");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "achievementToast";
+    el.className = "achievement-toast";
+    app.appendChild(el);
+  }
+  el.textContent = message;
+  el.classList.add("show");
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => el.classList.remove("show"), 1600);
+}
+function celebrateGoal() { playChirp(); showToast("🎉 Yearly goal achieved!"); }
+function meow() {
+  playChirp();
+  const el = document.getElementById("meowBubble");
+  if (el) {
+    el.textContent = "Meow~ 🐾";
+    el.classList.add("show");
+    clearTimeout(window._meowTimer);
+    window._meowTimer = setTimeout(() => el.classList.remove("show"), 1200);
+  }
+}
+function toggleTimer() {
+  running = !running;
+  if (running) {
+    timerInterval = setInterval(() => {
+      timeLeft -= 1;
+      if (timeLeft <= 0) { tMode = tMode === "focus" ? "break" : "focus"; timeLeft = tMode === "focus" ? FOCUS_LEN : BREAK_LEN; }
+      renderTimerDisplay();
+    }, 1000);
+  } else { clearInterval(timerInterval); }
+  render();
+}
+function resetTimer() { running = false; clearInterval(timerInterval); tMode = "focus"; timeLeft = FOCUS_LEN; render(); }
+function renderTimerDisplay() {
+  const mm = String(Math.floor(timeLeft/60)).padStart(2,"0"), ss = String(timeLeft%60).padStart(2,"0");
+  const el = document.getElementById("timerDigits"); if (el) el.textContent = mm+":"+ss;
+  const modeEl = document.getElementById("timerModeLabel"); if (modeEl) modeEl.textContent = tMode==="focus"?"Focus":"Break";
+}
+
+/* ---------- render ---------- */
+function renderMoon() {
+  const c = computed();
+  const ring = document.getElementById("moonShadow");
+  if (ring) ring.style.transform = `translateX(${c.moonPhase.pct}%)`;
+  const stats = document.getElementById("headerStats");
+  if (stats) stats.textContent = (c.cycleInfo ? `${c.cycleInfo.phase} · day ${c.cycleInfo.cycleDay}` : "cycle not set") + ` · ${c.doneCount}/${c.total} today · ${state.streak}-night streak`;
+}
+
+function taskDetailHtml(t) {
+  return `
+    <div class="task-detail" data-detail-for="${t.id}">
+      <div class="detail-row">
+        <div><span class="detail-label">App to open</span>
+          <input type="text" value="${esc(t.app||"")}" onchange="updateTask(${t.id},{app:this.value})" placeholder="e.g. MuslimPro" /></div>
+        <div><span class="detail-label">Life goal</span>
+          <select onchange="updateTask(${t.id},{goalId: this.value===''?null:Number(this.value)}); renderPlan();">
+            <option value="" ${t.goalId==null?"selected":""}>— not linked —</option>
+            ${state.lifeGoals.map((g,i)=>`<option value="${i}" ${t.goalId===i?"selected":""}>${esc(g.desc)}</option>`).join("")}
+          </select></div>
+      </div>
+      <div><span class="detail-label">Resource link / GIF</span>
+        <input type="url" value="${esc(t.resourceUrl||"")}" onchange="updateTask(${t.id},{resourceUrl:this.value})" placeholder="https://…" /></div>
+      <div><span class="detail-label">Note — what did you feel or discover?</span>
+        <textarea rows="2" onchange="updateTask(${t.id},{note:this.value})">${esc(t.note)}</textarea></div>
+      <div class="detail-row">
+        <div><span class="detail-label">Deviation from plan</span>
+          <input type="text" value="${esc(t.deviation)}" onchange="updateTask(${t.id},{deviation:this.value})" /></div>
+        <div style="flex:0 0 120px"><span class="detail-label">Impact</span>
+          <select onchange="updateTask(${t.id},{deviationImpact:this.value})">
+            ${["none","low","medium","high"].map(v=>`<option value="${v}" ${t.deviationImpact===v?"selected":""}>${v[0].toUpperCase()+v.slice(1)}</option>`).join("")}
+          </select></div>
+      </div>
+      <div class="detail-actions">
+        <button onclick="markMissed(${t.id})">${t.missed?"unmark missed":"mark missed"}</button>
+        <button onclick="delTask(${t.id})">remove</button>
+      </div>
+    </div>`;
+}
+
+function renderFocus() {
+  const { focusQueue, goalPct } = computed();
+  if (focusQueue.length === 0) {
+    return `<div class="focus-home">
+      <div class="focus-home-empty">🌙</div>
+      <div class="focus-home-title fraunces">Everything's settled.</div>
+      <p style="color:var(--text-dim);font-size:13px">Nothing left for today. Add more from Plan, or just rest here.</p>
+      <div class="cat-wrap">
+        <div class="meow-bubble" id="meowBubble"></div>
+        <button class="cat-face" onclick="meow()" title="Finished everything? Tap me!">🐱</button>
+      </div>
+    </div>`;
+  }
+  const t = focusQueue[0], next = focusQueue[1] || null;
+  const cat = catMap[t.categoryId];
+  const media = t.resourceUrl
+    ? (isMediaUrl(t.resourceUrl) ? `<div><img class="focus-home-media" src="${esc(t.resourceUrl)}" alt=""></div>`
+      : `<div><a class="focus-home-link" href="${esc(t.resourceUrl)}" target="_blank" rel="noopener">Open resource ↗</a></div>`)
+    : "";
+  const reflectPanel = reflectOpen ? `
+    <div class="focus-home-reflect-panel">
+      <select onchange="updateTask(${t.id},{goalId:this.value===''?null:Number(this.value)})">
+        <option value="">— link a life goal —</option>
+        ${state.lifeGoals.map((g,i)=>`<option value="${i}" ${t.goalId===i?"selected":""}>${esc(g.desc)}</option>`).join("")}
+      </select>
+      <textarea rows="2" onchange="updateTask(${t.id},{note:this.value})" placeholder="What did you feel or notice?">${esc(t.note)}</textarea>
+      <div class="detail-row">
+        <input type="text" value="${esc(t.deviation)}" onchange="updateTask(${t.id},{deviation:this.value})" placeholder="Deviation from plan…" />
+        <select style="max-width:110px" onchange="updateTask(${t.id},{deviationImpact:this.value})">
+          ${["none","low","medium","high"].map(v=>`<option value="${v}" ${t.deviationImpact===v?"selected":""}>${v==="none"?"No impact":v[0].toUpperCase()+v.slice(1)}</option>`).join("")}
+        </select>
+      </div>
+    </div>` : "";
+  return `
+    <div class="focus-home">
+      <div class="focus-home-eyebrow">${cat?esc(cat.name):"General"} · ${focusQueue.length} left today</div>
+      <div class="focus-home-title fraunces">${esc(t.title)}</div>
+      ${t.time!=="--:--" ? `<div class="focus-home-time mono">${esc(t.time)}</div>` : ""}
+      ${t.app ? (t.app === "2026 Goals" ? `<div><button class="focus-home-app" onclick="view='yearly'; render();" style="border:none;cursor:pointer">🎯 Pick a 2026 goal</button></div>` : `<div><a class="focus-home-app" href="${appLaunchUrl(t.app)}">${esc(t.app)} ↗</a></div>`) : ""}
+      ${t.goalId != null ? `<div><span class="focus-home-goalpct" title="An equal share among today's goal-linked tasks — not a claim about the goal itself being X% done.">🎯 ~${goalPct}% of today's goal-focused effort</span></div>` : ""}
+      ${media}
+      <div class="focus-home-actions">
+        <button class="focus-home-done" onclick="focusDone(${t.id})">Done — next</button>
+        <button class="focus-home-skip" onclick="focusSkip(${t.id})">Skip</button>
+      </div>
+      <div class="cat-wrap">
+        <div class="meow-bubble" id="meowBubble"></div>
+        <button class="cat-face" onclick="meow()" title="Finished something? Tap me!">🐱</button>
+      </div>
+      <button class="focus-home-reflect-toggle" onclick="reflectOpen=!reflectOpen; render();">${reflectOpen?"hide notes":"+ note or deviation"}</button>
+      ${reflectPanel}
+    </div>
+    ${next ? `<div class="next-preview">
+      <div class="next-preview-label">Up next</div>
+      <div class="next-preview-title">${esc(next.title)}</div>
+      ${next.time!=="--:--" ? `<div class="next-preview-time mono">${esc(next.time)}</div>` : ""}
+    </div>` : ""}`;
+}
+
+function renderPlanInner() {
+  const { sortedTasks, alignmentPct, goalPct } = computed();
+  const rows = sortedTasks.length === 0
+    ? `<div class="empty">Nothing yet — add today's first task below.</div>`
+    : sortedTasks.map(t => {
+        const expanded = expandedId === t.id;
+        return `
+        <div class="task-row" onclick="expandedId=${expandedId===t.id?"null":t.id}; renderPlan();">
+          <div class="task-check ${t.done?"done":t.missed?"missed":""}" onclick="event.stopPropagation(); toggleDone(${t.id});">${t.done?"✓":t.missed?"✕":""}</div>
+          <span class="cat-dot" style="background:${CAT_COLORS[t.categoryId]||"#888"}"></span>
+          <span class="task-time mono">${esc(t.time)}</span>
+          <span class="task-title ${t.done?"done":t.missed?"missed":""}">${esc(t.title)}</span>
+          ${t.goalId != null ? `<span class="task-goalpct" title="Equal share among today's goal-linked tasks">🎯 ${goalPct}%</span>` : ""}
+          <span class="task-caret">${expanded?"▴":"▾"}</span>
+        </div>
+        ${expanded ? taskDetailHtml(t) : ""}`;
+      }).join("");
+
+  const catOptions = CATEGORIES.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("");
+  const goalOptions = `<option value="">— not linked —</option>` + state.lifeGoals.map((g,i)=>`<option value="${i}">${esc(g.desc)}</option>`).join("");
+
+  return `
+    <div class="task-list">${rows}</div>
+    <div class="quick-add">
+      <input type="time" id="qTime" />
+      <input type="text" id="qTitle" placeholder="One small next action…" onkeydown="if(event.key==='Enter'){addQuickTask();}" />
+      <button class="primary" onclick="addQuickTask()">Add</button>
+    </div>
+    ${showAdvancedAdd ? `
+    <div class="expand-panel">
+      <div class="detail-row">
+        <div><span class="detail-label">Category</span><select id="qCat">${catOptions}</select></div>
+        <div><span class="detail-label">App</span><input type="text" id="qApp" placeholder="Optional" /></div>
+      </div>
+      <div><span class="detail-label">Resource link / GIF</span><input type="url" id="qUrl" placeholder="Optional" /></div>
+      <div><span class="detail-label">Life goal</span><select id="qGoal">${goalOptions}</select></div>
+    </div>` : `<select id="qCat" style="display:none">${catOptions}</select><input id="qApp" style="display:none"><input id="qUrl" style="display:none"><select id="qGoal" style="display:none">${goalOptions}</select>`}
+    <div>
+      <span class="toggle-line" onclick="showAdvancedAdd=!showAdvancedAdd; renderPlan();">${showAdvancedAdd?"hide":"+ category / app / goal"}</span>
+      <span class="toggle-line" onclick="showTimer=!showTimer; renderPlan();">${showTimer?"hide timer":"+ focus timer"}</span>
+      <span class="toggle-line" onclick="showObsidian=!showObsidian; renderPlan();">${showObsidian?"hide":"+ Obsidian vault"}</span>
+      <span class="toggle-line" onclick="closeOut()">close out day${state.obsidianVault?" (also sends to Obsidian)":""}</span>
+      <span class="toggle-line" onclick="analyzeWithClaude()">analyze today with Claude</span>
+    </div>
+    ${showObsidian ? `
+    <div class="expand-panel">
+      <span class="detail-label">Obsidian vault name (exact name as it appears in Obsidian)</span>
+      <input type="text" value="${esc(state.obsidianVault)}" onchange="setObsidianVault(this.value)" placeholder="e.g. My Vault" />
+      <span class="detail-label" style="margin-top:4px">Once set, tapping "close out day" also creates/updates today's note in Obsidian — requires Obsidian installed on this device.</span>
+    </div>` : ""}
+    ${showTimer ? `
+    <div class="expand-panel">
+      <div class="timer-mode" id="timerModeLabel">${tMode==="focus"?"Focus":"Break"}</div>
+      <div class="timer-display mono" id="timerDigits">${String(Math.floor(timeLeft/60)).padStart(2,"0")}:${String(timeLeft%60).padStart(2,"0")}</div>
+      <div class="timer-controls">
+        <button class="primary" onclick="toggleTimer()">${running?"Pause":"Start"}</button>
+        <button class="ghost" onclick="resetTimer()">Reset</button>
+      </div>
+    </div>` : ""}
+    <div class="header-stats" style="margin-top:16px">${alignmentPct}% of today's completed actions are linked to a life goal · ${state.points} pts</div>
+  `;
+}
+
+function renderGoalsInner() {
+  const { maxGoalActions } = computed();
+  const idxs = state.lifeGoals.map((g,i)=>i)
+    .filter(i => goalFilter==="all" || state.lifeGoals[i].status===goalFilter)
+    .sort((a,b)=>state.lifeGoals[b].importance - state.lifeGoals[a].importance);
+  const rows = idxs.map(idx => {
+    const g = state.lifeGoals[idx], count = state.goalActionCounts[idx] || 0;
+    return `<div class="goal-row">
+      <span class="goal-desc">${esc(g.desc)}<span class="goal-sub">${esc(g.part)}</span></span>
+      <div class="goal-bar-track"><div class="goal-bar-fill" style="width:${Math.round((count/maxGoalActions)*100)}%"></div></div>
+      <span class="goal-importance mono">${g.importance}</span>
+    </div>`;
+  }).join("");
+  return `
+    <div class="goals-filter">
+      ${["all","progress","notyet"].map(f=>`<span class="nav-tab" style="color:${goalFilter===f?"var(--text)":"var(--text-dim)"};cursor:pointer" onclick="goalFilter='${f}'; renderGoals();">${f==="all"?"All":f==="progress"?"In progress":"Not yet"}</span>`).join("")}
+    </div>
+    ${rows}
+    <div class="expand-panel" style="margin-top:16px">
+      <span class="detail-label">Add a new life goal</span>
+      <input type="text" id="newGoalDesc" placeholder="e.g. Learn to sail" />
+      <div class="detail-row">
+        <input type="text" id="newGoalPart" placeholder="Area · timeframe (optional)" />
+        <select id="newGoalStatus" style="max-width:110px">
+          <option value="notyet">Not yet</option>
+          <option value="progress">In progress</option>
+        </select>
+        <input type="number" id="newGoalImportance" min="1" max="10" value="8" style="max-width:70px" title="Importance 1–10" />
+      </div>
+      <button class="primary" style="align-self:flex-start" onclick="addGoalFromForm()">Add goal</button>
+    </div>
+  `;
+}
+
+function renderYearlyInner() {
+  const goals = state.yearlyGoals;
+  const total = goals.length;
+  const done = goals.filter(g => g.done).length;
+  const completionPct = total ? Math.round((done / total) * 100) : 0;
+  const now = new Date();
+  const doy = dayOfYear(now);
+  const totalDays = daysInYear(now.getFullYear());
+  const yearPct = Math.round((doy / totalDays) * 100);
+  const paceDiff = completionPct - yearPct;
+  const paceLabel = Math.abs(paceDiff) <= 3 ? "right on pace" : paceDiff > 0 ? `${paceDiff}% ahead of pace` : `${Math.abs(paceDiff)}% behind pace`;
+  const rows = goals.map(g => `
+    <div class="goal-row">
+      <div class="task-check ${g.done ? "done" : ""}" onclick="toggleYearlyGoal(${g.id})" style="cursor:pointer">${g.done ? "✓" : ""}</div>
+      <span class="goal-desc">${esc(g.desc)}${g.done ? `<span class="goal-sub">Completed ${esc(g.completedDate)} · +50 pts</span>` : ""}</span>
+    </div>`).join("");
+  return `
+    <div class="yearly-header">
+      <div class="yearly-count fraunces">${done} / ${total}</div>
+      <div class="yearly-sub">2026 goals achieved</div>
+    </div>
+    <div class="pace-track" title="Fill = goals completed. Marker = where you would be if perfectly on pace with the calendar.">
+      <div class="pace-fill" style="width:${completionPct}%"></div>
+      <div class="pace-marker" style="left:${yearPct}%"></div>
+    </div>
+    <div class="pace-label">${yearPct}% of 2026 gone · you're ${paceLabel}</div>
+    <div class="yearly-list">${rows}</div>
+    <div class="expand-panel" style="margin-top:16px">
+      <span class="detail-label">Add a new yearly goal</span>
+      <input type="text" id="newYearlyGoal" placeholder="e.g. Learn calligraphy" onkeydown="if(event.key==='Enter'){addYearlyGoal(this.value); this.value='';}" />
+      <button class="primary" style="align-self:flex-start" onclick="const el=document.getElementById('newYearlyGoal'); addYearlyGoal(el.value); el.value='';">Add</button>
+    </div>
+  `;
+}
+
+function render() {
+  const app = document.getElementById("app");
+  const c = computed();
+  app.innerHTML = `
+    <div class="sky-deco"></div>
+    <div class="sky-cloud" style="top:-20px;left:10%;width:180px;height:90px"></div>
+    <div class="sky-cloud" style="top:0px;left:60%;width:220px;height:100px;animation-delay:6s"></div>
+
+    <div class="header">
+      <div class="moon-col">
+        <div class="moon-ring" onclick="showCycle=!showCycle; render();" title="Tap to set your cycle">
+          <div class="moon-body"></div>
+          <div class="moon-shadow" id="moonShadow" style="transform:translateX(${c.moonPhase.pct}%)"></div>
+        </div>
+        <div class="moon-caption">${c.moonPhase.name}</div>
+      </div>
+      <div class="header-text">
+        <div class="day-type-badge">${(new Date().getDay()===1||new Date().getDay()===4) ? "Fasting Day" : "Non-Fasting Day"}</div>
+        ${c.cycleInfo ? `<div class="phase-badge">${c.cycleInfo.phase} Phase</div>` : ""}
+        <h1 class="fraunces">Noor's Life</h1>
+        <div class="header-sub">${new Date().toLocaleDateString(undefined,{weekday:'long', month:'short', day:'numeric'})}</div>
+        <div class="header-stats" id="headerStats">${c.cycleInfo?`${c.cycleInfo.phase} · day ${c.cycleInfo.cycleDay}`:"cycle not set"} · ${c.doneCount}/${c.total} today · ${state.streak}-night streak</div>
+      </div>
+    </div>
+
+    <input class="theme-line" type="text" placeholder="Name today…" value="${esc(state.dailyThemes[state.date]||"")}" onchange="setTheme(this.value)" />
+
+    ${showCycle ? `
+    <div class="expand-panel">
+      ${c.cycleInfo ? `<span class="detail-label">Based on ${c.cycleInfo.cyclesUsed || state.periodHistory.length} logged cycles: ~${c.cycleInfo.avgCycleLength}-day cycle, ~${c.cycleInfo.avgPeriodLength}-day period. Your history is irregular in places, so treat this as a best estimate, not a guarantee.</span>` : `<span class="detail-label">No history yet — log your first period below.</span>`}
+      <div class="detail-row">
+        <button class="ghost" onclick="logPeriodStart()">I got my period today</button>
+        ${state.periodHistory.length && !state.periodHistory[state.periodHistory.length-1].end ? `<button class="ghost" onclick="logPeriodEnd()">My period ended today</button>` : ""}
+      </div>
+      <a class="focus-home-app" style="align-self:flex-start" href="${appLaunchUrl('Period Calendar')}">Check Period Calendar ↗</a>
+    </div>` : ""}
+
+    <div class="nav-tabs">
+      <button class="nav-tab ${view==='focus'?'active':''}" onclick="view='focus'; render();">Focus</button>
+      <button class="nav-tab ${view==='plan'?'active':''}" onclick="view='plan'; render();">Plan</button>
+      <button class="nav-tab ${view==='goals'?'active':''}" onclick="view='goals'; render();">Life Goals</button>
+      <button class="nav-tab ${view==='yearly'?'active':''}" onclick="view='yearly'; render();">2026 Goals</button>
+    </div>
+
+    <div id="viewRoot">
+      ${view==='focus' ? renderFocus() : view==='plan' ? renderPlanInner() : view==='yearly' ? renderYearlyInner() : renderGoalsInner()}
+    </div>
+
+    <div class="offline-note">Runs fully offline · location used only for prayer times and the sky</div>
+  `;
+}
+function renderPlan() { document.getElementById("viewRoot").innerHTML = renderPlanInner(); }
+function renderGoals() { document.getElementById("viewRoot").innerHTML = renderGoalsInner(); }
+function renderYearly() { document.getElementById("viewRoot").innerHTML = renderYearlyInner(); }
+
+/* expose functions used by inline handlers */
+window.toggleDone = toggleDone; window.markMissed = markMissed; window.delTask = delTask;
+window.updateTask = updateTask; window.setTheme = setTheme; window.setCycle = setCycle;
+window.addLifeGoal = addLifeGoal; window.closeOut = closeOut; window.focusDone = focusDone;
+window.setObsidianVault = setObsidianVault;
+window.analyzeWithClaude = analyzeWithClaude;
+window.meow = meow;
+window.logPeriodStart = logPeriodStart;
+window.logPeriodEnd = logPeriodEnd;
+window.toggleYearlyGoal = toggleYearlyGoal;
+window.addYearlyGoal = addYearlyGoal;
+window.renderYearly = renderYearly;
+window.focusSkip = focusSkip; window.addQuickTask = addQuickTask; window.addGoalFromForm = addGoalFromForm;
+window.toggleTimer = toggleTimer; window.resetTimer = resetTimer; window.render = render;
+window.renderPlan = renderPlan; window.renderGoals = renderGoals;
+Object.defineProperty(window, "view", { get:()=>view, set:v=>view=v });
+Object.defineProperty(window, "expandedId", { get:()=>expandedId, set:v=>expandedId=v });
+Object.defineProperty(window, "showCycle", { get:()=>showCycle, set:v=>showCycle=v });
+Object.defineProperty(window, "showTimer", { get:()=>showTimer, set:v=>showTimer=v });
+Object.defineProperty(window, "showObsidian", { get:()=>showObsidian, set:v=>showObsidian=v });
+Object.defineProperty(window, "showAdvancedAdd", { get:()=>showAdvancedAdd, set:v=>showAdvancedAdd=v });
+Object.defineProperty(window, "goalFilter", { get:()=>goalFilter, set:v=>goalFilter=v });
+Object.defineProperty(window, "reflectOpen", { get:()=>reflectOpen, set:v=>reflectOpen=v });
+
+render();
+resolveLocation();
+clearStaleTasks();
+setInterval(clearStaleTasks, 5*60*1000);
+})();
+</script>
+</body>
+</html>
